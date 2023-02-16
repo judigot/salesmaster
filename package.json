@@ -6,7 +6,8 @@
     "dev": "npx dotenv -e .env.local -- next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "push-schema-changes": "npx dotenv -e .env.local -- npx prisma db push && npx prisma generate"
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma"
