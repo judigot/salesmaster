@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -11,12 +11,12 @@ model app_custom_price {
   custom_price_id Int          @id @default(autoincrement())
   customer_id     Int
   product_id      Int
-  custom_price    Float?       @db.Float
+  custom_price    Float?       @db.DoublePrecision
   app_product     app_product  @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "app_custom_price_ibfk_1")
   app_customer    app_customer @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "app_custom_price_ibfk_2")
 
-  @@index([customer_id], map: "customer_id")
-  @@index([product_id], map: "product_id")
+  // @@index([customer_id], map: "customer_id")
+  // @@index([product_id], map: "product_id")
 }
 
 model app_customer {
@@ -26,35 +26,35 @@ model app_customer {
   client_address   String?             @db.VarChar(255)
   date_added       DateTime?           @db.Date
   status           app_customer_status @default(active)
-  jumbo_price      Float?              @default(0) @db.Float
-  jumbo_c_price    Float?              @default(0) @db.Float
-  xl_price         Float?              @default(0) @db.Float
-  xl_c_price       Float?              @default(0) @db.Float
-  l_price          Float?              @default(0) @db.Float
-  l_c_price        Float?              @default(0) @db.Float
-  m_price          Float?              @default(0) @db.Float
-  m_c_price        Float?              @default(0) @db.Float
-  s_price          Float?              @default(0) @db.Float
-  s_c_price        Float?              @default(0) @db.Float
-  p_price          Float?              @default(0) @db.Float
-  p_c_price        Float?              @default(0) @db.Float
-  pwe_price        Float?              @default(0) @db.Float
-  pwe_c_price      Float?              @default(0) @db.Float
-  d2_price         Float?              @default(0) @db.Float
-  d2_c_price       Float?              @default(0) @db.Float
-  marble_price     Float?              @default(0) @db.Float
-  marble_c_price   Float?              @default(0) @db.Float
-  d1b_price        Float?              @default(0) @db.Float
-  d1b_c_price      Float?              @default(0) @db.Float
-  d1s_price        Float?              @default(0) @db.Float
-  d1s_c_price      Float?              @default(0) @db.Float
-  b1_price         Float?              @default(0) @db.Float
-  b1_c_price       Float?              @default(0) @db.Float
-  b2_price         Float?              @default(0) @db.Float
-  b2_c_price       Float?              @default(0) @db.Float
-  b3_price         Float?              @default(0) @db.Float
-  b3_c_price       Float?              @default(0) @db.Float
-  es_price         Float               @default(0) @db.Float
+  jumbo_price      Float?              @default(0) @db.DoublePrecision
+  jumbo_c_price    Float?              @default(0) @db.DoublePrecision
+  xl_price         Float?              @default(0) @db.DoublePrecision
+  xl_c_price       Float?              @default(0) @db.DoublePrecision
+  l_price          Float?              @default(0) @db.DoublePrecision
+  l_c_price        Float?              @default(0) @db.DoublePrecision
+  m_price          Float?              @default(0) @db.DoublePrecision
+  m_c_price        Float?              @default(0) @db.DoublePrecision
+  s_price          Float?              @default(0) @db.DoublePrecision
+  s_c_price        Float?              @default(0) @db.DoublePrecision
+  p_price          Float?              @default(0) @db.DoublePrecision
+  p_c_price        Float?              @default(0) @db.DoublePrecision
+  pwe_price        Float?              @default(0) @db.DoublePrecision
+  pwe_c_price      Float?              @default(0) @db.DoublePrecision
+  d2_price         Float?              @default(0) @db.DoublePrecision
+  d2_c_price       Float?              @default(0) @db.DoublePrecision
+  marble_price     Float?              @default(0) @db.DoublePrecision
+  marble_c_price   Float?              @default(0) @db.DoublePrecision
+  d1b_price        Float?              @default(0) @db.DoublePrecision
+  d1b_c_price      Float?              @default(0) @db.DoublePrecision
+  d1s_price        Float?              @default(0) @db.DoublePrecision
+  d1s_c_price      Float?              @default(0) @db.DoublePrecision
+  b1_price         Float?              @default(0) @db.DoublePrecision
+  b1_c_price       Float?              @default(0) @db.DoublePrecision
+  b2_price         Float?              @default(0) @db.DoublePrecision
+  b2_c_price       Float?              @default(0) @db.DoublePrecision
+  b3_price         Float?              @default(0) @db.DoublePrecision
+  b3_c_price       Float?              @default(0) @db.DoublePrecision
+  es_price         Float               @default(0) @db.DoublePrecision
   app_custom_price app_custom_price[]
   app_order        app_order[]
 }
@@ -62,11 +62,11 @@ model app_customer {
 model app_order {
   order_id          Int                 @id @default(autoincrement())
   customer_id       Int
-  order_date        DateTime            @default(now()) @db.DateTime(0)
+  order_date        DateTime            @default(now()) @db.Timestamptz()
   app_customer      app_customer        @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "app_order_ibfk_1")
   app_order_product app_order_product[]
 
-  @@index([customer_id], map: "customer_id")
+  // @@index([customer_id], map: "customer_id")
 }
 
 model app_order_product {
@@ -74,22 +74,22 @@ model app_order_product {
   order_id      Int
   product_id    Int
   quantity      Int
-  product_cost  Float       @db.Float
-  product_price Float       @db.Float
-  discount      Float?      @default(0) @db.Float
+  product_cost  Float       @db.DoublePrecision
+  product_price Float       @db.DoublePrecision
+  discount      Float?      @default(0) @db.DoublePrecision
   app_order     app_order   @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "app_order_product_ibfk_1")
   app_product   app_product @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "app_order_product_ibfk_2")
 
-  @@index([order_id], map: "order_id")
-  @@index([product_id], map: "product_id")
+  // @@index([order_id], map: "order_id")
+  // @@index([product_id], map: "product_id")
 }
 
 model app_product {
   product_id           Int                  @id @default(autoincrement())
   product_name         String?              @db.VarChar(255)
   product_category     Int
-  product_cost         Float?               @default(0) @db.Float
-  product_price        Float?               @default(0) @db.Float
+  product_cost         Float?               @default(0) @db.DoublePrecision
+  product_price        Float?               @default(0) @db.DoublePrecision
   product_stock        Int?                 @default(0)
   status               app_product_status?  @default(active)
   app_custom_price     app_custom_price[]
