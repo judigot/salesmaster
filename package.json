@@ -7,9 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "seed": "npx dotenv -e .env.local -- npx prisma db seed",
     "push-schema-changes": "npx dotenv -e .env.local -- npx prisma db push && npx prisma generate"
   },
   "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} ./src/prisma/seed/seed.ts",
     "schema": "src/prisma/schema.prisma"
   },
   "dependencies": {
