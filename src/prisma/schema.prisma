@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +5,124 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model app_custom_price {
+  custom_price_id Int          @id @default(autoincrement())
+  customer_id     Int
+  product_id      Int
+  custom_price    Float?       @db.Float
+  app_product     app_product  @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "app_custom_price_ibfk_1")
+  app_customer    app_customer @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "app_custom_price_ibfk_2")
+
+  @@index([customer_id], map: "customer_id")
+  @@index([product_id], map: "product_id")
+}
+
+model app_customer {
+  customer_id      Int                 @id @default(autoincrement())
+  first_name       String?             @db.VarChar(255)
+  last_name        String?             @db.VarChar(255)
+  client_address   String?             @db.VarChar(255)
+  date_added       DateTime?           @db.Date
+  status           app_customer_status @default(active)
+  jumbo_price      Float?              @default(0) @db.Float
+  jumbo_c_price    Float?              @default(0) @db.Float
+  xl_price         Float?              @default(0) @db.Float
+  xl_c_price       Float?              @default(0) @db.Float
+  l_price          Float?              @default(0) @db.Float
+  l_c_price        Float?              @default(0) @db.Float
+  m_price          Float?              @default(0) @db.Float
+  m_c_price        Float?              @default(0) @db.Float
+  s_price          Float?              @default(0) @db.Float
+  s_c_price        Float?              @default(0) @db.Float
+  p_price          Float?              @default(0) @db.Float
+  p_c_price        Float?              @default(0) @db.Float
+  pwe_price        Float?              @default(0) @db.Float
+  pwe_c_price      Float?              @default(0) @db.Float
+  d2_price         Float?              @default(0) @db.Float
+  d2_c_price       Float?              @default(0) @db.Float
+  marble_price     Float?              @default(0) @db.Float
+  marble_c_price   Float?              @default(0) @db.Float
+  d1b_price        Float?              @default(0) @db.Float
+  d1b_c_price      Float?              @default(0) @db.Float
+  d1s_price        Float?              @default(0) @db.Float
+  d1s_c_price      Float?              @default(0) @db.Float
+  b1_price         Float?              @default(0) @db.Float
+  b1_c_price       Float?              @default(0) @db.Float
+  b2_price         Float?              @default(0) @db.Float
+  b2_c_price       Float?              @default(0) @db.Float
+  b3_price         Float?              @default(0) @db.Float
+  b3_c_price       Float?              @default(0) @db.Float
+  es_price         Float               @default(0) @db.Float
+  app_custom_price app_custom_price[]
+  app_order        app_order[]
+}
+
+model app_order {
+  order_id          Int                 @id @default(autoincrement())
+  customer_id       Int
+  order_date        DateTime            @default(now()) @db.DateTime(0)
+  app_customer      app_customer        @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "app_order_ibfk_1")
+  app_order_product app_order_product[]
+
+  @@index([customer_id], map: "customer_id")
+}
+
+model app_order_product {
+  id            Int         @id @default(autoincrement())
+  order_id      Int
+  product_id    Int
+  quantity      Int
+  product_cost  Float       @db.Float
+  product_price Float       @db.Float
+  discount      Float?      @default(0) @db.Float
+  app_order     app_order   @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "app_order_product_ibfk_1")
+  app_product   app_product @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "app_order_product_ibfk_2")
+
+  @@index([order_id], map: "order_id")
+  @@index([product_id], map: "product_id")
+}
+
+model app_product {
+  product_id           Int                  @id @default(autoincrement())
+  product_name         String?              @db.VarChar(255)
+  product_category     Int
+  product_cost         Float?               @default(0) @db.Float
+  product_price        Float?               @default(0) @db.Float
+  product_stock        Int?                 @default(0)
+  status               app_product_status?  @default(active)
+  app_custom_price     app_custom_price[]
+  app_order_product    app_order_product[]
+  app_product_category app_product_category @relation(fields: [product_category], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "app_product_ibfk_1")
+
+  @@index([product_category], map: "product_category")
+}
+
+model app_product_category {
+  category_id   Int           @id @default(autoincrement())
+  category_name String        @db.VarChar(255)
+  app_product   app_product[]
+}
+
+model app_user {
+  user_id   Int                @id @default(autoincrement())
+  username  String             @db.VarChar(255)
+  password  String             @db.VarChar(255)
+  user_type app_user_user_type @default(secretary)
+}
+
+enum app_user_user_type {
+  administrator
+  secretary
+}
+
+enum app_customer_status {
+  active
+  inactive
+}
+
+enum app_product_status {
+  active
+  inactive
 }
