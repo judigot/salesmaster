@@ -16,7 +16,7 @@ const tableName = "app_user";
 
 const getUsers = async () => {
   try {
-    const result = prisma.$queryRawUnsafe(`SELECT * FROM ${tableName};`);
+    const result = await prisma.$queryRawUnsafe(`SELECT * FROM ${tableName};`);
     return result;
   } catch (error) {
     return error;
