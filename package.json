@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "seed": "npx dotenv -e .env.local -- npx prisma db seed",
-    "db-push-schema": "npx dotenv -e .env.local -- npx prisma db push && npx prisma generate",
-    "db-pull-schema": "npx dotenv -e .env.local -- npx prisma db pull && npx prisma generate"
+    "prisma-push-schema": "npx dotenv -e .env.local -- npx prisma db push && npx prisma generate",
+    "prisma-pull-schema": "npx dotenv -e .env.local -- npx prisma db pull && npx prisma generate"
   },
   "prisma": {
     "seed": "ts-node --compilerOptions {\"module\":\"CommonJS\"} ./src/prisma/seed/seed.ts",
