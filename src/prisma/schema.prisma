@@ -8,17 +8,19 @@ datasource db {
 }
 
 model customer {
-  customer_id   BigInt  @id @default(autoincrement())
-  customer_name String  @unique @db.VarChar(255)
-  order         order[]
+  customer_id   BigInt @id @default(autoincrement())
+  customer_name String @unique @db.VarChar(255)
+
+  customerHasMany_order order[]
 }
 
 model order {
-  order_id      BigInt          @id @default(autoincrement())
-  customer_id   BigInt
-  order_date    DateTime        @db.Timestamptz(6)
-  customer      customer        @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order.customer_id")
-  order_product order_product[]
+  order_id    BigInt   @id @default(autoincrement())
+  customer_id BigInt
+  order_date  DateTime @db.Timestamptz(6)
+
+  customerHasMany_order      customer        @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order.customer_id")
+  orderHasMany_order_product order_product[]
 }
 
 model order_product {
@@ -28,27 +30,30 @@ model order_product {
   quantity      BigInt
   product_cost  Decimal? @db.Decimal
   product_price Decimal? @db.Decimal
-  order         order    @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order_product.order_id")
-  product       product  @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order_product.product_id")
+
+  orderHasMany_order_product   order   @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order_product.order_id")
+  productHasMany_order_product product @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order_product.product_id")
 }
 
 model product {
-  product_id              BigInt           @id @default(autoincrement())
-  sku                     String           @unique @db.VarChar(255)
-  product_name            String           @db.VarChar(255)
-  product_category        BigInt
-  product_cost            Decimal?         @db.Decimal
-  product_price           Decimal?         @db.Decimal
-  product_stock           BigInt           @default(0)
-  status                  product_status?  @default(active)
-  order_product_xxxyyy    order_product[]
-  product_category_xxxyyy product_category @relation(fields: [product_category], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_product.category_id")
+  product_id       BigInt          @id @default(autoincrement())
+  sku              String          @unique @db.VarChar(255)
+  product_name     String          @db.VarChar(255)
+  product_category BigInt
+  product_cost     Decimal?        @db.Decimal
+  product_price    Decimal?        @db.Decimal
+  product_stock    BigInt          @default(0)
+  status           product_status? @default(active)
+
+  productHasMany_order_product order_product[]
+  categoryHasMany_product      product_category @relation(fields: [product_category], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_product.category_id")
 }
 
 model product_category {
-  category_id   BigInt    @id @default(autoincrement())
-  category_name String    @db.VarChar(255)
-  product       product[]
+  category_id   BigInt @id @default(autoincrement())
+  category_name String @db.VarChar(255)
+
+  categoryHasMany_product product[]
 }
 
 model user {
