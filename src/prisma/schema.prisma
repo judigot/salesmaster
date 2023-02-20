@@ -8,9 +8,12 @@ datasource db {
 }
 
 model customer {
-  customer_id   BigInt @id @default(autoincrement())
-  customer_name String @unique @db.VarChar(255)
-
+  customer_id           BigInt          @id @default(autoincrement())
+  first_name            String?         @db.VarChar(255)
+  last_name             String?         @db.VarChar(255)
+  client_address        String?         @db.VarChar(255)
+  date_added            DateTime?       @db.Timestamptz(6)
+  status                customer_status @default(active)
   customerHasMany_order order[]
 }
 
@@ -30,6 +33,7 @@ model order_product {
   quantity      BigInt
   product_cost  Decimal? @db.Decimal
   product_price Decimal? @db.Decimal
+  discount      Decimal? @db.Decimal
 
   orderHasMany_order_product   order   @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order_product.order_id")
   productHasMany_order_product product @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order_product.product_id")
@@ -37,7 +41,7 @@ model order_product {
 
 model product {
   product_id       BigInt          @id @default(autoincrement())
-  sku              String          @unique @db.VarChar(255)
+  // sku              String          @unique @db.VarChar(255)
   product_name     String          @db.VarChar(255)
   product_category BigInt
   product_cost     Decimal?        @db.Decimal
@@ -58,15 +62,14 @@ model product_category {
 
 model user {
   user_id   BigInt      @id @default(autoincrement())
-  email     String      @unique @db.VarChar(255)
-  name      String      @db.VarChar(255)
+  username  String      @db.VarChar(255)
   password  String      @db.VarChar(255)
-  user_type user_types? @default(standard)
+  user_type user_types? @default(secretary)
 }
 
 enum user_types {
   administrator
-  standard
+  secretary
 }
 
 enum customer_status {
