@@ -7,122 +7,69 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model app_custom_price {
-  custom_price_id Int          @id @default(autoincrement())
-  customer_id     Int
-  product_id      Int
-  custom_price    Float?       @db.DoublePrecision
-  app_product     app_product  @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "app_custom_price_ibfk_1")
-  app_customer    app_customer @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "app_custom_price_ibfk_2")
-
-  // @@index([customer_id], map: "customer_id")
-  // @@index([product_id], map: "product_id")
+model customer {
+  customer_id   BigInt  @id @default(autoincrement())
+  customer_name String  @unique @db.VarChar(255)
+  order         order[]
 }
 
-model app_customer {
-  customer_id      Int                 @id @default(autoincrement())
-  first_name       String?             @db.VarChar(255)
-  last_name        String?             @db.VarChar(255)
-  client_address   String?             @db.VarChar(255)
-  date_added       DateTime?           @db.Date
-  status           app_customer_status @default(active)
-  // jumbo_price      Float?              @default(0) @db.DoublePrecision
-  // jumbo_c_price    Float?              @default(0) @db.DoublePrecision
-  // xl_price         Float?              @default(0) @db.DoublePrecision
-  // xl_c_price       Float?              @default(0) @db.DoublePrecision
-  // l_price          Float?              @default(0) @db.DoublePrecision
-  // l_c_price        Float?              @default(0) @db.DoublePrecision
-  // m_price          Float?              @default(0) @db.DoublePrecision
-  // m_c_price        Float?              @default(0) @db.DoublePrecision
-  // s_price          Float?              @default(0) @db.DoublePrecision
-  // s_c_price        Float?              @default(0) @db.DoublePrecision
-  // p_price          Float?              @default(0) @db.DoublePrecision
-  // p_c_price        Float?              @default(0) @db.DoublePrecision
-  // pwe_price        Float?              @default(0) @db.DoublePrecision
-  // pwe_c_price      Float?              @default(0) @db.DoublePrecision
-  // d2_price         Float?              @default(0) @db.DoublePrecision
-  // d2_c_price       Float?              @default(0) @db.DoublePrecision
-  // marble_price     Float?              @default(0) @db.DoublePrecision
-  // marble_c_price   Float?              @default(0) @db.DoublePrecision
-  // d1b_price        Float?              @default(0) @db.DoublePrecision
-  // d1b_c_price      Float?              @default(0) @db.DoublePrecision
-  // d1s_price        Float?              @default(0) @db.DoublePrecision
-  // d1s_c_price      Float?              @default(0) @db.DoublePrecision
-  // b1_price         Float?              @default(0) @db.DoublePrecision
-  // b1_c_price       Float?              @default(0) @db.DoublePrecision
-  // b2_price         Float?              @default(0) @db.DoublePrecision
-  // b2_c_price       Float?              @default(0) @db.DoublePrecision
-  // b3_price         Float?              @default(0) @db.DoublePrecision
-  // b3_c_price       Float?              @default(0) @db.DoublePrecision
-  // es_price         Float               @default(0) @db.DoublePrecision
-  app_custom_price app_custom_price[]
-  app_order        app_order[]
+model order {
+  order_id      BigInt          @id @default(autoincrement())
+  customer_id   BigInt
+  order_date    DateTime        @db.Timestamptz(6)
+  customer      customer        @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order.customer_id")
+  order_product order_product[]
 }
 
-model app_order {
-  order_id          Int                 @id @default(autoincrement())
-  customer_id       Int
-  order_date        DateTime            @default(now()) @db.Timestamptz()
-  app_customer      app_customer        @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "app_order_ibfk_1")
-  app_order_product app_order_product[]
-
-  // @@index([customer_id], map: "customer_id")
+model order_product {
+  id            BigInt   @id @default(autoincrement())
+  order_id      BigInt
+  product_id    BigInt
+  quantity      BigInt
+  product_cost  Decimal? @db.Decimal
+  product_price Decimal? @db.Decimal
+  order         order    @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order_product.order_id")
+  product       product  @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order_product.product_id")
 }
 
-model app_order_product {
-  id            Int         @id @default(autoincrement())
-  order_id      Int
-  product_id    Int
-  quantity      Int
-  product_cost  Float       @db.DoublePrecision
-  product_price Float       @db.DoublePrecision
-  discount      Float?      @default(0) @db.DoublePrecision
-  app_order     app_order   @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "app_order_product_ibfk_1")
-  app_product   app_product @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "app_order_product_ibfk_2")
-
-  // @@index([order_id], map: "order_id")
-  // @@index([product_id], map: "product_id")
+model product {
+  product_id              BigInt           @id @default(autoincrement())
+  sku                     String           @unique @db.VarChar(255)
+  product_name            String           @db.VarChar(255)
+  product_category        BigInt
+  product_cost            Decimal?         @db.Decimal
+  product_price           Decimal?         @db.Decimal
+  product_stock           BigInt           @default(0)
+  status                  product_status?  @default(active)
+  order_product_xxxyyy    order_product[]
+  product_category_xxxyyy product_category @relation(fields: [product_category], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_product.category_id")
 }
 
-model app_product {
-  product_id           Int                  @id @default(autoincrement())
-  product_name         String?              @db.VarChar(255)
-  product_category     Int
-  product_cost         Float?               @default(0) @db.DoublePrecision
-  product_price        Float?               @default(0) @db.DoublePrecision
-  product_stock        Int?                 @default(0)
-  status               app_product_status?  @default(active)
-  app_custom_price     app_custom_price[]
-  app_order_product    app_order_product[]
-  app_product_category app_product_category @relation(fields: [product_category], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "app_product_ibfk_1")
-
-  @@index([product_category], map: "product_category")
+model product_category {
+  category_id   BigInt    @id @default(autoincrement())
+  category_name String    @db.VarChar(255)
+  product       product[]
 }
 
-model app_product_category {
-  category_id   Int           @id @default(autoincrement())
-  category_name String        @db.VarChar(255)
-  app_product   app_product[]
+model user {
+  user_id   BigInt      @id @default(autoincrement())
+  email     String      @unique @db.VarChar(255)
+  name      String      @db.VarChar(255)
+  password  String      @db.VarChar(255)
+  user_type user_types? @default(standard)
 }
 
-model app_user {
-  user_id   Int                @id @default(autoincrement())
-  username  String             @db.VarChar(255)
-  password  String             @db.VarChar(255)
-  user_type app_user_user_type @default(secretary)
-}
-
-enum app_user_user_type {
+enum user_types {
   administrator
-  secretary
+  standard
 }
 
-enum app_customer_status {
+enum customer_status {
   active
   inactive
 }
 
-enum app_product_status {
+enum product_status {
   active
   inactive
 }
