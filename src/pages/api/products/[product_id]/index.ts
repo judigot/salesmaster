@@ -23,7 +23,6 @@ export default function handler(
   res: NextApiResponse<Data>
 ) {
   const { product_id } = req.query;
-  console.log(typeof BigInt(product_id as string));
   Product.findUnique({
     where: {
       product_id: BigInt(product_id as string),
