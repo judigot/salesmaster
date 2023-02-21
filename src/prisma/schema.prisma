@@ -50,14 +50,14 @@ model product {
   status           product_status? @default(active)
 
   productHasMany_order_product order_product[]
-  categoryHasMany_product      product_category @relation(fields: [product_category], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_product.category_id")
+  categoryHasMany_product      product_category @relation("categoryHasMany_product", fields: [product_category], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_product.category_id")
 }
 
 model product_category {
   category_id   BigInt @id @default(autoincrement())
   category_name String @db.VarChar(255)
 
-  categoryHasMany_product product[]
+  categoryHasMany_product product[] @relation("categoryHasMany_product")
 }
 
 model user {
