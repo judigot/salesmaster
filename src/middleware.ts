@@ -6,6 +6,17 @@ export const config = {
   matcher: "/api/:resource*",
 };
 
-export function middleware(request: any, res: NextResponse) {
-  console.log("Middleware");
+export function middleware(request: NextRequest, res: NextResponse) {
+  const isAuth = true;
+  if (isAuth) {
+    return new NextResponse(
+      JSON.stringify({ success: true, message: "Authentication successful" }),
+      { status: 200, headers: { "content-type": "application/json" } }
+    );
+  } else {
+    return new NextResponse(
+      JSON.stringify({ success: true, message: "Authentication successful" }),
+      { status: 200, headers: { "content-type": "application/json" } }
+    );
+  }
 }
