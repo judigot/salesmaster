@@ -6,18 +6,16 @@ const inter = Inter({ subsets: ["latin"] });
 
 import { PrismaClient } from "@prisma/client";
 
-import crypto from "crypto";
+import DatatypeParser from "@utilities/DatatypeParser";
 
 const prisma = new PrismaClient();
 
-const Users = prisma.app_user;
-
-const tableName = "app_user";
+const Users = prisma.user;
 
 const getUsers = async () => {
   try {
-    const result = await prisma.$queryRawUnsafe(`SELECT * FROM ${tableName};`);
-    return result;
+    const result = await Users.findMany();
+    return DatatypeParser(result);
   } catch (error) {
     return error;
   }
@@ -28,7 +26,7 @@ export default async function Home() {
   return (
     <main className={styles.main}>
       {users?.map((row: { [key: string]: string }, i: number) => {
-        return <p key={i}>{row?.username}</p>;
+        return <span key={i}>{JSON.stringify(row)}</span>;
       })}
     </main>
   );
