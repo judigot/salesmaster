@@ -24,22 +24,17 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const { product_id } = req.query;
-  Product.findUnique({
-    where: {
-      product_id: BigInt(product_id as string),
-    },
-  })
-    .then((result: any) => {
-      // Success
-      const data = DatatypeParser(result) as unknown as Data;
-      res.status(200).json(data);
-    })
-    .catch((error: string) => {
-      // Failure
-      console.log(error);
-    })
-    .finally(() => {
-      // Finally
-    });
+  (async () => {
+    try {
+      const { product_id } = req.query;
+      const result: any = await Product.findUnique({
+        where: {
+          product_id: BigInt(product_id as string),
+        },
+      });
+      res.status(200).json(DatatypeParser(result) as unknown as Data);
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  })();
 }
