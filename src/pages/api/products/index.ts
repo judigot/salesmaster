@@ -25,7 +25,6 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const { product_id } = req.query;
   Product.findMany()
     .then((result: any) => {
       // Success
