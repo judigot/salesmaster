@@ -71,7 +71,7 @@ export default async function handler(
       }
       break;
     default:
-      res.json({} as Data);
+      res.status(200).json({} as Data);
       break;
   }
 }
