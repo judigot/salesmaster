@@ -41,7 +41,9 @@ export default async function handler(
             user,
           });
         } catch (error) {
-          res.status(403);
+          res.status(200).json({
+            redirect: "login",
+          });
         }
       } else {
         res.status(200).json({
