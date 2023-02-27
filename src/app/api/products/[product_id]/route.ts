@@ -8,14 +8,22 @@ const prisma = new PrismaClient();
 
 const Product = prisma.product;
 
-export async function GET(req: Request) {
+export async function GET(req: Request, { params }: any) {
   try {
-    const result: any = await Product.findMany();
+    const result: Object | null = await Product.findUnique({
+      where: {
+        product_id: BigInt(params.product_id),
+      },
+    });
     return NextResponse.json(DatatypeParser(result), {
       status: 200,
     });
-    // res.status(200).json(DatatypeParser(result) as unknown as Data);
   } catch (error: any) {
-    throw new Error(error);
+    return NextResponse.json(
+      { error: error.message },
+      {
+        status: 500,
+      }
+    );
   }
 }
