@@ -36,6 +36,15 @@ export default async function handler(
             `${process.env.ACCESS_TOKEN_SECRET}`
           );
           res.setHeader("user", user);
+          res.setHeader(
+            "Set-Cookie",
+            cookie.serialize("accessToken", token, {
+              httpOnly: true,
+              secure: true,
+              sameSite: "strict",
+              // maxAge: 60 * 60 * 24 * 7, // 1 week
+            })
+          );
           res.status(200).json({
             redirect: "user",
             user,

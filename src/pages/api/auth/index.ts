@@ -46,8 +46,10 @@ export default async function handler(
             let accessToken = undefined;
             if (isCorrectPassword) {
               //====================JWT====================//
+              // Set user information (payload) to be sent to the client (exclude sensitive information like passwords)
+              const { password, ...userInfo } = user;
               accessToken = jwt.sign(
-                user,
+                userInfo,
                 `${process.env.ACCESS_TOKEN_SECRET}`
                 // { expiresIn: "5s" }
               );
@@ -55,6 +57,8 @@ export default async function handler(
                 "Set-Cookie",
                 cookie.serialize("accessToken", accessToken, {
                   httpOnly: true,
+                  secure: true,
+                  sameSite: "strict",
                   // maxAge: 60 * 60 * 24 * 7, // 1 week
                 })
               );
