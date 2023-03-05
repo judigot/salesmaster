@@ -33,6 +33,7 @@ export default async function handler(
           select: {
             username: true,
             password: true,
+            user_type: true,
           },
           where: {
             username: username,
