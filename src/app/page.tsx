@@ -20,8 +20,7 @@ import {
   buildSchema as gql,
 } from "graphql";
 
-// Run the GraphQL query '{ users }' and print out the response// Construct a schema, using GraphQL schema language
-var schema = gql(`
+const schema = /* GraphQL */ `
   type User {
     user_id: ID!
     username: String!
@@ -30,28 +29,25 @@ var schema = gql(`
   }
 
   type OrderedProducts {
-    order_id: ID!
-    product_id: ID!
-    quantity: ID!
+    id: ID!
+    order_id: Int!
+    product_id: Int!
+    quantity: Int!
   }
 
   type Order {
     order_id: ID!
-    products: [OrderedProducts!]
+    orderProducts: [OrderedProducts!]!
   }
 
   type Query {
-      getText: String!
-      getUser(id: ID!): User
-      getOrder(id: ID!): Order
+    getUser(id: ID!): User
+    getOrder(id: ID!): Order
   }
-`);
+`;
 
 // The rootValue provides a resolver function for each API endpoint
 var rootValue = {
-  getText: () => {
-    return "Hello, World!";
-  },
   getUser: async ({ id }: { id: string }) => {
     const result: any = await Users.findUnique({
       select: {
@@ -69,8 +65,9 @@ var rootValue = {
     const result: any = await prisma.order.findUnique({
       select: {
         order_id: true,
-        orderHasMany_order_product: {
+        orderProducts: {
           select: {
+            id: true,
             order_id: true,
             product_id: true,
             quantity: true,
@@ -81,31 +78,43 @@ var rootValue = {
         order_id: parseInt(id),
       },
     });
-    console.log(result);
-    return DatatypeParser(result);
+    const x: any = DatatypeParser(result);
+    return x;
   },
 };
 
 const getUsers = async () => {
   try {
-    let source = "";
-    // source = "{ getText }";
-    // source = "{ getUser(id: 1) { user_id, username, password } }";
-    source = "{ getOrder(id: 1) { order_id } }";
+    const id = 1;
+    let query = "";
+    query = /* GraphQL */ `
+      query {
+        getUser(id: ${id}) {
+          user_id
+          username
+          password
+        }
+      }
+    `;
 
-    graphql({ schema, source, rootValue })
-      .then((result) => {
-        // Success
-        console.log(JSON.stringify(result.data));
-        return result.data;
-      })
-      .catch((error) => {
-        // Failure
-        throw new Error(error);
-      })
-      .finally(() => {
-        // Finally
-      });
+    query = /* GraphQL */ `
+      query {
+        getOrder(id: 1) {
+          order_id
+          orderProducts {
+            id
+            order_id
+            product_id
+            quantity
+          }
+        }
+      }
+    `;
+
+    // prettier-ignore
+    const { data: { getOrder: order } }: any = await graphql({ schema: gql(schema), source: query, rootValue });
+
+    return order;
   } catch (error) {
     return error;
   }
@@ -113,5 +122,10 @@ const getUsers = async () => {
 
 export default async function Home() {
   const users: any = await getUsers();
-  return <main className={styles.main}></main>;
+  return (
+    <main className={styles.main}>
+      <p>{typeof users.orderProducts[0].product_id}</p>
+      <p>{typeof users.orderProducts[0].product_id}</p>
+    </main>
+  );
 }
