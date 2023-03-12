@@ -1,4 +1,4 @@
-import { Decimal } from "@prisma/client/runtime";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export default function castRows(result: any) {
   // Success
@@ -27,7 +27,9 @@ export default function castRows(result: any) {
 
 const castRowValues = (data: any) => {
   if (data) {
-    let rows: { [key: string]: string | number | Decimal } | undefined = {};
+    let rows:
+      | { [key: string]: string | number | Decimal | Date | Object }
+      | undefined = {};
 
     for (
       let i = 0, arrayLength = Object.keys(data).length;
@@ -41,11 +43,23 @@ const castRowValues = (data: any) => {
           rows[key] = parseInt((value as unknown as number).toString());
           break;
         case "object":
-          if (Object.keys(value).length) {
-            // Recurse if row is an object
-            rows[key] = castRows(value) as unknown as any;
-          } else {
-            rows[key] = parseFloat(value);
+          if (value instanceof Decimal) {
+            rows[key] = parseFloat(value as unknown as string);
+          }
+
+          // Array
+          if (
+            value instanceof Array &&
+            Array.isArray(value) &&
+            value.constructor.name === "Array"
+          ) {
+            // Recurse if row is an array
+            rows[key] = castRows(value) as unknown as Object;
+          }
+
+          // Date/Datetime
+          if (value instanceof Date) {
+            rows[key] = new Date(value);
           }
           break;
         default:
