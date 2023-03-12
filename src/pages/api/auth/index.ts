@@ -11,8 +11,6 @@ import cookie from "cookie";
 
 const prisma = new PrismaClient();
 
-const User = prisma.user;
-
 type Data = {
   username: string;
   password: string;
@@ -29,7 +27,7 @@ export default async function handler(
     case "POST":
       const { username, password } = req.body;
       if (username && password) {
-        const user = await User.findFirst({
+        const user = await prisma.user.findFirst({
           select: {
             username: true,
             password: true,
