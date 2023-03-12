@@ -14,7 +14,7 @@ model customer {
   client_address        String?         @db.VarChar(255)
   date_added            DateTime?       @db.Timestamptz(6)
   status                customer_status @default(active)
-  customerHasMany_order order[]
+  customerOrders order[]
 }
 
 model order {
@@ -22,8 +22,8 @@ model order {
   customer_id BigInt
   order_date  DateTime @db.Timestamptz(6)
 
-  customerHasMany_order      customer        @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order.customer_id")
-  orderHasMany_order_product order_product[]
+  customerOrders      customer        @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order.customer_id")
+  orderProducts order_product[]
 }
 
 model order_product {
@@ -35,8 +35,8 @@ model order_product {
   product_price Decimal? @db.Decimal
   discount      Decimal? @db.Decimal
 
-  orderHasMany_order_product   order   @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order_product.order_id")
-  productHasMany_order_product product @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order_product.product_id")
+  orderProducts   order   @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order_product.order_id")
+  productOrderProducts product @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_order_product.product_id")
 }
 
 model product {
@@ -49,15 +49,15 @@ model product {
   product_stock    BigInt          @default(0)
   status           product_status? @default(active)
 
-  productHasMany_order_product order_product[]
-  categoryHasMany_product      product_category @relation("categoryHasMany_product", fields: [product_category], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_product.category_id")
+  productOrderProducts order_product[]
+  categoryProducts      product_category @relation("categoryProducts", fields: [product_category], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_product.category_id")
 }
 
 model product_category {
   category_id   BigInt @id @default(autoincrement())
   category_name String @db.VarChar(255)
 
-  categoryHasMany_product product[] @relation("categoryHasMany_product")
+  categoryProducts product[] @relation("categoryProducts")
 }
 
 model user {
