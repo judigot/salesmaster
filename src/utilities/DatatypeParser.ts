@@ -62,6 +62,8 @@ const castRowValues = (data: any) => {
             rows[key] = new Date(value);
           }
           break;
+
+        // String
         default:
           rows[key] = value;
           break;
