@@ -11,8 +11,6 @@ import cookie from "cookie";
 
 const prisma = new PrismaClient();
 
-const User = prisma.user;
-
 type Data = {
   // username: string;
   // password: string;
