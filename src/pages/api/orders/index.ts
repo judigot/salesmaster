@@ -1,8 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { Decimal } from "@prisma/client/runtime";
-
 import DatatypeParser from "@utilities/DatatypeParser";
 
 import { PrismaClient } from "@prisma/client";
@@ -10,13 +8,9 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 type Data = {
-  product_id: number;
-  product_name: string;
-  product_category: number;
-  product_cost: Decimal;
-  product_price: Decimal;
-  product_stock: BigInt;
-  status: string;
+  order_id: number;
+  customer_id: number;
+  order_date: Date;
 };
 
 export default function handler(
@@ -25,10 +19,26 @@ export default function handler(
 ) {
   (async () => {
     try {
-      const result: any = await prisma.product.findMany({
+      const result: any = await prisma.order.findMany({
+        select: {
+          order_id: true,
+          customer_id: true,
+          orderProducts: {
+            select: {
+              id: true,
+              order_id: true,
+              product_id: true,
+              quantity: true,
+              product_cost: true,
+              product_price: true,
+              discount: true,
+            },
+          },
+          order_date: true,
+        },
         orderBy: [
           {
-            product_id: "asc",
+            order_id: "asc",
           },
         ],
       });

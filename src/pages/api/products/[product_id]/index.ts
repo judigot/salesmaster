@@ -9,8 +9,6 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const Product = prisma.product;
-
 type Data = {
   product_id: number;
   product_name: string;
@@ -27,7 +25,7 @@ export default function handler(
   (async () => {
     try {
       const { product_id } = req.query;
-      const result: any = await Product.findUnique({
+      const result: any = await prisma.product.findUnique({
         where: {
           product_id: BigInt(product_id as string),
         },

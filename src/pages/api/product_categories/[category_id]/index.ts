@@ -18,19 +18,17 @@ type Data = {
   product_stock: BigInt;
   status: string;
 };
-
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
   (async () => {
     try {
-      const result: any = await prisma.product.findMany({
-        orderBy: [
-          {
-            product_id: "asc",
-          },
-        ],
+      const { category_id } = req.query;
+      const result: any = await prisma.product_category.findUnique({
+        where: {
+          category_id: BigInt(category_id as string),
+        },
       });
       res.status(200).json(DatatypeParser(result) as unknown as Data);
     } catch (error: any) {

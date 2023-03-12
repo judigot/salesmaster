@@ -25,10 +25,10 @@ export default function handler(
 ) {
   (async () => {
     try {
-      const result: any = await prisma.product.findMany({
+      const result: any = await prisma.user.findMany({
         orderBy: [
           {
-            product_id: "asc",
+            user_id: "asc",
           },
         ],
       });
