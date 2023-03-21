@@ -38,7 +38,7 @@ export default function handler(
         },
         orderBy: [
           {
-            order_id: "asc",
+            order_id: "desc",
           },
         ],
       });
