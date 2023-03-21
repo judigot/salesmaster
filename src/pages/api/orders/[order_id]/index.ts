@@ -4,6 +4,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import DatatypeParser from "@utilities/DatatypeParser";
 
 import { PrismaClient } from "@prisma/client";
+import rawQuery from "../rawQuery";
 
 const prisma = new PrismaClient();
 
@@ -20,27 +21,30 @@ export default function handler(
   (async () => {
     try {
       const { order_id } = req.query;
-      const result: any = await prisma.order.findUnique({
-        select: {
-          order_id: true,
-          customer_id: true,
-          orderProducts: {
-            select: {
-              id: true,
-              order_id: true,
-              product_id: true,
-              quantity: true,
-              product_cost: true,
-              product_price: true,
-              discount: true,
-            },
-          },
-          order_date: true,
-        },
-        where: {
-          order_id: BigInt(order_id as string),
-        },
-      });
+      // const result: any = await prisma.order.findUnique({
+      //   select: {
+      //     order_id: true,
+      //     customer_id: true,
+      //     orderProducts: {
+      //       select: {
+      //         id: true,
+      //         order_id: true,
+      //         product_id: true,
+      //         quantity: true,
+      //         product_cost: true,
+      //         product_price: true,
+      //         discount: true,
+      //       },
+      //     },
+      //     order_date: true,
+      //   },
+      //   where: {
+      //     order_id: BigInt(order_id as string),
+      //   },
+      // });
+      const result: any = await prisma.$queryRawUnsafe(
+        rawQuery(/*sql*/ `WHERE order_id = ${order_id}`)
+      );
       res.status(200).json(DatatypeParser(result) as unknown as Data);
     } catch (error: any) {
       throw new Error(error);
