@@ -16,7 +16,7 @@ export default function rawQuery(condition?: string) {
                         FROM order_product
                             JOIN product USING (product_id)
                         WHERE order_product.order_id = "order"."order_id"
-                        ORDER BY id DESC
+                        ORDER BY id
                     ) AS products
             ) AS order_product,
             order_date
