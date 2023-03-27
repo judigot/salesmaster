@@ -14,39 +14,54 @@ type Data = {
   order_date: Date;
 };
 
+const getData = async () => {
+  try {
+    // const result: any = await prisma.order.findMany({
+    //   select: {
+    //     order_id: true,
+    //     customer_id: true,
+    //     orderProducts: {
+    //       select: {
+    //         id: true,
+    //         order_id: true,
+    //         product_id: true,
+    //         quantity: true,
+    //         product_cost: true,
+    //         product_price: true,
+    //         discount: true,
+    //       },
+    //     },
+    //     order_date: true,
+    //   },
+    //   orderBy: [
+    //     {
+    //       order_id: "desc",
+    //     },
+    //   ],
+    // });
+    return await prisma.$queryRawUnsafe(rawQuery());
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
   (async () => {
-    try {
-      // const result: any = await prisma.order.findMany({
-      //   select: {
-      //     order_id: true,
-      //     customer_id: true,
-      //     orderProducts: {
-      //       select: {
-      //         id: true,
-      //         order_id: true,
-      //         product_id: true,
-      //         quantity: true,
-      //         product_cost: true,
-      //         product_price: true,
-      //         discount: true,
-      //       },
-      //     },
-      //     order_date: true,
-      //   },
-      //   orderBy: [
-      //     {
-      //       order_id: "desc",
-      //     },
-      //   ],
-      // });
-      const result: any = await prisma.$queryRawUnsafe(rawQuery());
-      res.status(200).json(DatatypeParser(result) as unknown as Data);
-    } catch (error: any) {
-      throw new Error(error);
+    // prettier-ignore
+    switch (req.method) {
+      case "GET":
+        // res.redirect("/");
+        res.status(200).json(DatatypeParser(await getData()) as unknown as Data);
+        break;
+      case "POST":
+        res.status(200).json(DatatypeParser(await getData()) as unknown as Data);
+        break;
+      default:
+        res.status(200).json({} as Data);
+        break;
     }
   })();
 }
