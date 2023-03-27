@@ -46,9 +46,21 @@ export default async function handler(
             if (isCorrectPassword) {
               //====================JWT====================//
               // Set user information (payload) to be sent to the client (exclude sensitive information like passwords)
-              const { password, ...userInfo } = user;
+
+              // Version 1: Mutate user object by removing the password hash
+              // Less readable
+              // const { password, ...userInfo } = user;
+              // accessToken = jwt.sign(
+              //   userInfo, // Mutated user object (password hash excluded)
+              //   `${process.env.ACCESS_TOKEN_SECRET}`
+              //   // { expiresIn: "5s" }
+              // );
+
+              // Version 2: Destructure user object
+              // More readable
+              const { username, user_type } = user;
               accessToken = jwt.sign(
-                userInfo,
+                { username, user_type }, // Values that are sent to the client
                 `${process.env.ACCESS_TOKEN_SECRET}`
                 // { expiresIn: "5s" }
               );
