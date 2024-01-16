@@ -2,7 +2,7 @@ import {Decimal} from '@prisma/client/runtime/library';
 
 // Define a type for row data
 type RowData = {
-  [key: string]: string | number | Decimal | Date | Object | RowData[];
+  [key: string]: null | string | number | Decimal | Date | Object | RowData[];
 };
 
 export default function castRows<T extends RowData | RowData[]>(result: T): T {
