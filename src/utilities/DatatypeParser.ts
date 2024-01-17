@@ -2,7 +2,7 @@ import {Decimal} from '@prisma/client/runtime/library';
 
 // Define a type for row data
 type RowData = {
-  [key: string]: null | string | number | Decimal | Date | Object | RowData[];
+  [key: string]: null | string | number | bigint | Decimal | Date | RowData[];
 };
 
 export default function castRows<T extends RowData | RowData[]>(result: T): T {
@@ -17,7 +17,7 @@ export default function castRows<T extends RowData | RowData[]>(result: T): T {
 
   // If only one row
   if (!Array.isArray(result)) {
-    cleanedResult = castRowValues(result as RowData) as T;
+    cleanedResult = castRowValues(result) as T;
     return cleanedResult;
   }
 
@@ -25,12 +25,12 @@ export default function castRows<T extends RowData | RowData[]>(result: T): T {
 }
 
 const castRowValues = (data: RowData): RowData => {
-  let rows: RowData = {};
+  const rows: RowData = {};
 
   for (const [key, value] of Object.entries(data)) {
     switch (typeof value) {
       case 'bigint':
-        rows[key] = Number(value.toString());
+        rows[key] = Number(value);
         break;
       case 'object':
         if (value instanceof Decimal) {
@@ -44,7 +44,7 @@ const castRowValues = (data: RowData): RowData => {
           value.constructor.name === 'Array'
         ) {
           // Recurse if row is an array
-          rows[key] = castRows(value) as unknown as Object;
+          rows[key] = castRows(value);
         }
 
         // Date/Datetime
