@@ -5,7 +5,7 @@ type RowData = {
   [key: string]: null | string | number | bigint | Decimal | Date | RowData[];
 };
 
-export default function castRows<T extends RowData | RowData[]>(result: T): T {
+export default function DatatypeParser<T extends RowData | RowData[]>(result: T): T {
   // Success
   let cleanedResult: T;
 
@@ -44,7 +44,7 @@ const castRowValues = (data: RowData): RowData => {
           value.constructor.name === 'Array'
         ) {
           // Recurse if row is an array
-          rows[key] = castRows(value);
+          rows[key] = DatatypeParser(value);
         }
 
         // Date/Datetime
