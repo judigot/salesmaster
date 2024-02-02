@@ -1,11 +1,14 @@
-import {Decimal} from '@prisma/client/runtime/library';
+import { Decimal } from '@prisma/client/runtime/library';
 
 // Define a type for row data
 type RowData = {
-  [key: string]: null | string | number | bigint | Decimal | Date | RowData[];
+  // [key: string]: undefined | null | string | number | bigint | Decimal | Date | RowData[];
+  [key: string]: unknown;
 };
 
-export default function DatatypeParser<T extends RowData | RowData[]>(result: T): T {
+export default function DatatypeParser<T extends RowData | RowData[]>(
+  result: T,
+): T {
   // Success
   let cleanedResult: T;
 
