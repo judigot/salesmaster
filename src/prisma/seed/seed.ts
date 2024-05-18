@@ -842,8 +842,6 @@ async function main() {
       {"id":566,"order_id":200,"product_id":9,"quantity":10,"product_cost":5,"product_price":10,"discount":2}
     ],
   });
-
-  console.log({ user });
 }
 
 main()
