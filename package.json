@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npx dotenv -e .env.local -- next dev -p 5000",
+    "dev": "pnpm dotenv -e .env.local -- next dev -p 5000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "npx dotenv -e .env.local -- npx prisma db seed",
-    "prisma-push-schema": "npx dotenv -e .env.local -- npx prisma db push && npx prisma generate",
-    "prisma-pull-schema": "npx dotenv -e .env.local -- npx prisma db pull && npx prisma generate"
+    "seed": "pnpm dotenv -e .env.local -- pnpm prisma db seed",
+    "prisma-push-schema": "pnpm dotenv -e .env.local -- pnpm prisma db push && pnpm prisma generate",
+    "prisma-pull-schema": "pnpm dotenv -e .env.local -- pnpm prisma db pull && pnpm prisma generate"
   },
   "prisma": {
     "seed": "ts-node --compilerOptions {\"module\":\"CommonJS\"} ./src/prisma/seed/seed.ts",
