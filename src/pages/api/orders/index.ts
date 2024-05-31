@@ -39,7 +39,7 @@ const getData = async () => {
     //     },
     //   ],
     // });
-    return await prisma.$queryRawUnsafe(rawQuery());
+    return (await prisma.$queryRawUnsafe(rawQuery())) as unknown as Data;
   } catch (error: any) {
     throw new Error(error);
   }
@@ -54,10 +54,10 @@ export default function handler(
     switch (req.method) {
       case "GET":
         // res.redirect("/");
-        res.status(200).json(DatatypeParser(await getData()) as unknown as Data);
+        res.status(200).json(DatatypeParser(await getData()) );
         break;
       case "POST":
-        res.status(200).json(DatatypeParser(await getData()) as unknown as Data);
+        res.status(200).json(DatatypeParser(await getData()) );
         break;
       default:
         res.status(200).json({} as Data);
