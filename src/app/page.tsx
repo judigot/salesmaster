@@ -1,91 +1,131 @@
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from './page.module.css'
+import Image from "next/image";
+import { Inter } from "@next/font/google";
+import styles from "./page.module.css";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+import { PrismaClient } from "@prisma/client";
+
+import DatatypeParser from "@utilities/DatatypeParser";
+
+const prisma = new PrismaClient();
+
+const Users = prisma.user;
+
+import {
+  graphql,
+  GraphQLSchema,
+  GraphQLObjectType,
+  GraphQLString,
+  buildSchema as gql,
+} from "graphql";
+
+const schema = /* GraphQL */ `
+  type User {
+    user_id: ID!
+    username: String!
+    password: String!
+    user_type: String!
+  }
+
+  type OrderedProducts {
+    id: ID!
+    order_id: Int!
+    product_id: Int!
+    quantity: Int!
+  }
+
+  type Order {
+    order_id: ID!
+    orderProducts: [OrderedProducts!]!
+  }
+
+  type Query {
+    getUser(id: ID!): User
+    getOrder(id: ID!): Order
+  }
+`;
+
+// The rootValue provides a resolver function for each API endpoint
+var rootValue = {
+  getUser: async ({ id }: { id: string }) => {
+    const result: any = await Users.findUnique({
+      select: {
+        user_id: true,
+        username: true,
+        password: true,
+      },
+      where: {
+        user_id: parseInt(id),
+      },
+    });
+    return DatatypeParser(result);
+  },
+  getOrder: async ({ id }: { id: string }) => {
+    const result: any = await prisma.order.findUnique({
+      select: {
+        order_id: true,
+        orderProducts: {
+          select: {
+            id: true,
+            order_id: true,
+            product_id: true,
+            quantity: true,
+          },
+        },
+      },
+      where: {
+        order_id: parseInt(id),
+      },
+    });
+    const x: any = DatatypeParser(result);
+    return x;
+  },
+};
+
+const getUsers = async () => {
+  try {
+    const id = 1;
+    let query = "";
+    query = /* GraphQL */ `
+      query {
+        getUser(id: ${id}) {
+          user_id
+          username
+          password
+        }
+      }
+    `;
+
+    query = /* GraphQL */ `
+      query {
+        getOrder(id: 1) {
+          order_id
+          orderProducts {
+            id
+            order_id
+            product_id
+            quantity
+          }
+        }
+      }
+    `;
+
+    // prettier-ignore
+    const { data: { getOrder: order } }: any = await graphql({ schema: gql(schema), source: query, rootValue });
+
+    return order;
+  } catch (error) {
+    return error;
+  }
+};
+
+export default async function Home() {
+  const users: any = await getUsers();
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      <p>{typeof users.orderProducts[0].product_id}</p>
+      <p>{typeof users.orderProducts[0].product_id}</p>
     </main>
-  )
+  );
 }
