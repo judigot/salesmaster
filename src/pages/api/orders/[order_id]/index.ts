@@ -37,9 +37,9 @@ const getData = async (order_id: string | string[] | undefined) => {
     //     order_id: BigInt(order_id as string),
     //   },
     // });
-    return await prisma.$queryRawUnsafe(
+    return (await prisma.$queryRawUnsafe(
       rawQuery(/*sql*/ `WHERE order_id = ${order_id}`)
-    );
+    )) as unknown as Data;
   } catch (error: any) {
     throw new Error(error);
   }
@@ -55,10 +55,10 @@ export default function handler(
     switch (req.method) {
       case "GET":
         // res.redirect("/");
-        res.status(200).json(DatatypeParser(await getData(order_id)) as unknown as Data);
+        res.status(200).json(DatatypeParser(await getData(order_id)));
         break;
       case "POST":
-        res.status(200).json(DatatypeParser(await getData(order_id)) as unknown as Data);
+        res.status(200).json(DatatypeParser(await getData(order_id)));
         break;
       default:
         res.status(200).json({} as Data);
